@@ -163,6 +163,7 @@ bool populateGraphFromDataFile(PathFinderGraph & graph){
  * For the moment don't see any special drawing capabilities.
  * MY/NOTE: After, when some algm as Dijkstra executed, just update nodes & arcs color and call again
  * displayMap() AND HIGLIHTED PATH WILL BE VISIBLE.
+ * MY/NOTE2: Or implement drawPath() in Path Class to highlight the finded path.
  */
 bool displayMap(PathFinderGraph & graph){
 	foreach (Node *node in graph.getNodeSet())
