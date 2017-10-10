@@ -10,15 +10,22 @@
 // [TODO: complete this implementation]
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include "console.h"
 #include "graphtypes.h"
 #include "gpathfinder.h"
+#include "tokenscanner.h"
+#include "PathFinderGraph.h"
+#include "strlib.h"
+#include "foreach.h"
 using namespace std;
 
 /* Function prototypes */
 
 void quitAction();
+bool populateGraphFromDataFile(PathFinderGraph & graph);
+string promtUserForFile(ifstream &infile, string promt = "");
 
 /* Main program */
 /* Program outline */
@@ -30,12 +37,119 @@ void quitAction();
    //6. Implement Kruskal's Algm for finding minim spanning tree.
 
 int main() {
+   PathFinderGraph graph;
    initPathfinderGraphics();
    addButton("Quit", quitAction);
+   populateGraphFromDataFile(graph);															// NEW CODING HERE
    pathfinderEventLoop();
    
    return 0;
 }
+
+/*
+ * Implementation notes: promtUserForFile
+ * ----------------------------------------------
+ * This function ask user to provide legal graph data file. Used as a ready Stanford Lib function here.
+ */
+string promtUserForFile(ifstream &infile, string promt){
+	while(true){
+		cout << promt;
+		string filename;
+		getline(cin, filename);
+		infile.open(filename.c_str());
+		if(!infile.fail()) return filename;
+		infile.clear();
+		cout << "Unable to open that file. Try againe." << endl;
+		if(promt == "") promt = "Input file: ";
+	}
+}
+
+/*
+ * Implementation notes: populateGraphFromDataFile
+ * ----------------------------------------------
+ * This function simply populate graph with Nodes and Arcs from wanted data file.
+ * As by nature iteratively get line and scann this line by words will produce algm with O(nº2) complexity
+ * was choosen algm with less complex data structures to save memory space. Originaly was designend 3 algms.
+ */
+bool populateGraphFromDataFile(PathFinderGraph & graph){
+	Vector <string> nodesFromDataFile;
+	int i = 0;		// simple counter.
+	string data[3];	// 3 space array to store data for node or arc
+	string mark;	// just data marker.
+	string line;	// line from file to be tokenized.
+	bool mapNotSet = true; // marker that is bg image for graph is not set.
+	ifstream infile;	
+	TokenScanner scanner;
+	promtUserForFile(infile, "Please enter the name of graph data file: ");
+	while(getline(infile, line)){
+		if(mapNotSet){			
+				drawPathfinderMap(line);															// FINISH HERE	OK	
+				mapNotSet = false;
+			}
+		scanner.setInput(line);
+		scanner.ignoreWhitespace();
+		while(scanner.hasMoreTokens()){
+			string token = scanner.nextToken();			
+			if(token == "NODES") mark = "Node";
+			else if(token == "ARCS") mark = "Arc";
+			else{
+				if(mark == "Node"){
+					data[i++] = token;
+					if(i == 3){
+						// populate node															// FINISH HERE	OK					
+						Node *node = new Node;
+						node->name = data[0];
+						GPoint loc(stringToReal(data[1]), stringToReal(data[2]));
+						node->loc = loc;
+						graph.addNode(node);
+						i = 0;
+					}
+				}else if(mark == "Arc"){
+					data[i++] = token;
+					if(i == 3){
+						// populate arc  // forward direction										// FINISH HERE	OK
+						/*cout << "d0:"<<data[0] << " d1:"<<data[1] << " d2:" <<data[2]<<endl;*/
+						Node *nodeStart = graph.getNode(data[0]);
+						Node *nodeFinish = graph.getNode(data[1]);
+						Arc *arc = new Arc;
+						arc->start = nodeStart;
+						arc->finish = nodeFinish;
+						arc->cost = stringToReal(data[2]);
+						graph.addArc(arc);
+						nodesFromDataFile.add(data[0]);
+						nodesFromDataFile.add(data[1]);
+
+						// populate arc  // backward direction										// FINISH HERE	OK
+						Node *nodeStart_ = graph.getNode(data[1]);
+						Node *nodeFinish_ = graph.getNode(data[0]);
+						Arc *arcbkw = new Arc;
+						arcbkw->start = nodeStart_;
+						arcbkw->finish = nodeFinish_;
+						arcbkw->cost = stringToReal(data[2]);
+						graph.addArc(arcbkw);
+						nodesFromDataFile.add(data[1]);
+						nodesFromDataFile.add(data[0]);
+						i = 0;
+					}
+				}
+			}
+		}
+	}
+	
+	// Do graph checkup.
+	//Returns true if the graph contains an arc from n1 to n2.										// FINISH HERE	OK
+	//iterate thru vector of arcs as nodes in sequence, where node[i] is ArcStart nad node[++i] is ArcFinish
+	for(int i = 0; i < nodesFromDataFile.size(); i = i + 2){
+		//cout << nodesFromDataFile.get(i) << "-->" << nodesFromDataFile.get(i + 1)<<endl;
+		if(graph.isConnected(nodesFromDataFile.get(i), nodesFromDataFile.get(i + 1)))
+			continue;
+		else 
+			error("Graph creation Error!");
+	}
+	cout << "OK";
+	return true;
+}
+
 
 /* Sample callback function */
 

@@ -225,12 +225,32 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
+				RelativePath=".\images\Stanford.jpg"
+				>
+			</File>
+			<File
 				RelativePath="..\..\StanfordCPPLib\StanfordCPPLib.lib"
+				>
+			</File>
+			<File
+				RelativePath=".\images\USA.jpg"
 				>
 			</File>
 		</Filter>
 		<File
 			RelativePath=".\PathfinderSampleApp.exe"
+			>
+		</File>
+		<File
+			RelativePath=".\Small.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\Stanford.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\USA.txt"
 			>
 		</File>
 	</Files>
