@@ -25,6 +25,7 @@ using namespace std;
 
 void quitAction();
 bool populateGraphFromDataFile(PathFinderGraph & graph);
+bool displayMap(PathFinderGraph & graph);
 string promtUserForFile(ifstream &infile, string promt = "");
 
 /* Main program */
@@ -40,7 +41,8 @@ int main() {
    PathFinderGraph graph;
    initPathfinderGraphics();
    addButton("Quit", quitAction);
-   populateGraphFromDataFile(graph);															// NEW CODING HERE
+   populateGraphFromDataFile(graph);															// NEW CODING HERE OK
+   displayMap(graph);
    pathfinderEventLoop();
    
    return 0;
@@ -100,6 +102,7 @@ bool populateGraphFromDataFile(PathFinderGraph & graph){
 						Node *node = new Node;
 						node->name = data[0];
 						GPoint loc(stringToReal(data[1]), stringToReal(data[2]));
+						node->color = NODE_COLOR;
 						node->loc = loc;
 						graph.addNode(node);
 						i = 0;
@@ -115,6 +118,7 @@ bool populateGraphFromDataFile(PathFinderGraph & graph){
 						arc->start = nodeStart;
 						arc->finish = nodeFinish;
 						arc->cost = stringToReal(data[2]);
+						arc->color = ARC_COLOR;
 						graph.addArc(arc);
 						nodesFromDataFile.add(data[0]);
 						nodesFromDataFile.add(data[1]);
@@ -126,6 +130,7 @@ bool populateGraphFromDataFile(PathFinderGraph & graph){
 						arcbkw->start = nodeStart_;
 						arcbkw->finish = nodeFinish_;
 						arcbkw->cost = stringToReal(data[2]);
+						arcbkw->color = ARC_COLOR;
 						graph.addArc(arcbkw);
 						nodesFromDataFile.add(data[1]);
 						nodesFromDataFile.add(data[0]);
@@ -146,10 +151,30 @@ bool populateGraphFromDataFile(PathFinderGraph & graph){
 		else 
 			error("Graph creation Error!");
 	}
-	cout << "OK";
-	return true;
+	cout << "Graph is populated Successfully!";
+	// if test isConnected() is passed, then return true
+	return true;	
 }
 
+/*
+ * Implementation notes: displayMap
+ * ----------------------------------------------
+ * This function simply display map on the screen using previousely populated internal graph.
+ * For the moment don't see any special drawing capabilities.
+ * MY/NOTE: After, when some algm as Dijkstra executed, just update nodes & arcs color and call again
+ * displayMap() AND HIGLIHTED PATH WILL BE VISIBLE.
+ */
+bool displayMap(PathFinderGraph & graph){
+	foreach (Node *node in graph.getNodeSet())
+		drawPathfinderNode(node->loc, node->color, node->name);
+
+	foreach (Arc *arc in graph.getArcSet())
+		drawPathfinderArc(arc->start->loc, arc->finish->loc, arc->color);
+	
+	//repaintPathfinderDisplay();
+	cout << "Map is created Successfully!";
+	return true;		
+}
 
 /* Sample callback function */
 
