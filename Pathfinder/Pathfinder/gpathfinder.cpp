@@ -134,7 +134,7 @@ void addButton(string name, ButtonCallbackBase *callback) {
    button.width = computeButtonWidth(name);
    button.height = BUTTON_HEIGHT;
    button.highlighted = false;
-   button.callback = callback;
+   button.callback = callback;	// assign callback func.
    buttons.add(button);
    drawButton(button);
    repaint();

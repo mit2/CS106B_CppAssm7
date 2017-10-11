@@ -30,6 +30,16 @@
  * no ClientDataType value is supplied.
  */
 
+/*
+	MY/NOTE: CS106B Reader
+	------------------------
+	Function pointers are limited in their utility because they offer no way to supply
+	client-supplied data along with the function. For most applications, what you need
+	is a strategy that encapsulates the callback function and the client-supplied data as a
+	single unit. In computer science, this combination of a function and its associated
+	data is called a closure.
+*/
+
 class ButtonCallbackBase {
 public:
    ButtonCallbackBase();
@@ -69,6 +79,10 @@ template <typename ClientDataType>
 void ButtonCallback<ClientDataType>::apply() {
    actionFn(*pdata);
 }
+
+/**********************************************************************************
+*																				  *
+**********************************************************************************/
 
 class ClickCallbackBase {
 public:
@@ -112,6 +126,10 @@ void ClickCallback<ClientDataType>::apply(GPoint pt) {
    clickFn(pt, *pdata);
 }
 
+/**********************************************************************************
+*																				  *
+**********************************************************************************/
+
 /* Prototypes for functions in gpathfinder.cpp */
 
 void addButton(string name, ButtonCallbackBase *callback);
@@ -131,7 +149,7 @@ template <typename ClientDataType>
 void addButton(string name,
                void (*actionFn)(ClientDataType & data),
                ClientDataType & data) {
-   addButton(name, new ButtonCallback<ClientDataType>(actionFn, &data));
+   addButton(name, new ButtonCallback<ClientDataType>(actionFn, &data));	// MY/NOTE: Funciton Object or Functor
 }
 
 template <typename ClientDataType>

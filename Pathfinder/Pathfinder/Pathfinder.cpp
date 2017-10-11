@@ -25,7 +25,9 @@ using namespace std;
 
 void quitAction();
 bool populateGraphFromDataFile(PathFinderGraph & graph);
-bool displayMap(PathFinderGraph & graph);
+void displayMap(PathFinderGraph & graph);
+void runDijkstra(PathFinderGraph & graph);
+void runKruskal(PathFinderGraph & graph);
 string promtUserForFile(ifstream &infile, string promt = "");
 
 /* Main program */
@@ -39,10 +41,13 @@ string promtUserForFile(ifstream &infile, string promt = "");
 
 int main() {
    PathFinderGraph graph;
-   initPathfinderGraphics();
+   initPathfinderGraphics();   
+   addButton("Map", displayMap, graph);															// NEW CODING HERE	ok
+   addButton("Dijkstra", runDijkstra, graph);
+   addButton("Kruskal", runKruskal, graph);
    addButton("Quit", quitAction);
-   populateGraphFromDataFile(graph);															// NEW CODING HERE OK
-   displayMap(graph);
+
+
    pathfinderEventLoop();
    
    return 0;
@@ -165,17 +170,42 @@ bool populateGraphFromDataFile(PathFinderGraph & graph){
  * displayMap() AND HIGLIHTED PATH WILL BE VISIBLE.
  * MY/NOTE2: Or implement drawPath() in Path Class to highlight the finded path.
  */
-bool displayMap(PathFinderGraph & graph){
+void displayMap(PathFinderGraph & graph){
+	// if(graph exist) delete previouse instance, ~PathFinderGraph();
+
+	// populate graph
+	populateGraphFromDataFile(graph);
+	// display map
 	foreach (Node *node in graph.getNodeSet())
 		drawPathfinderNode(node->loc, node->color, node->name);
 
 	foreach (Arc *arc in graph.getArcSet())
 		drawPathfinderArc(arc->start->loc, arc->finish->loc, arc->color);
 	
-	//repaintPathfinderDisplay();
-	cout << "Map is created Successfully!";
-	return true;		
+	repaintPathfinderDisplay();
+	cout << "Map is created Successfully!" <<endl;	
 }
+
+/*
+ * Implementation notes: runDijkstra
+ * ----------------------------------------------
+ * This function run Dijkstra Algm.
+ */
+void runDijkstra(PathFinderGraph & graph){
+	/*Empty*/
+	cout << "ok Dijkstra" <<endl;
+}
+
+/*
+ * Implementation notes: runKruskal
+ * ----------------------------------------------
+ * This function run Kruskal Algm.
+ */
+void runKruskal(PathFinderGraph & graph){
+	/*Empty*/
+	cout << "ok Kruskal" <<endl;
+}
+
 
 /* Sample callback function */
 
