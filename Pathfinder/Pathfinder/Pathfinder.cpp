@@ -198,22 +198,52 @@ void displayMap(PathFinderGraph & graph){
 /*
  * Implementation notes: runDijkstra
  * ----------------------------------------------
- * This function run Dijkstra Algm.
+ * This function run Dijkstra Algm. O(N^2)
  */
-void runDijkstra(PathFinderGraph & graph){	
+void runDijkstra(PathFinderGraph & graph){
+	Set<Node *> nodes = graph.getNodeSet();
+	// define min, max range for Node X and Y according to NODE_RADIUS
+	double minY = 0;
+	double maxY = 0;
+	double minX = 0;
+	double maxX = 0;
+	Node *endPoints[2]; // start and finish end points holder.
+	bool select;
 	// promt user for strating node, use mouseClick get location,	GPoint getMouseClick();								// NEW CODING HERE
 	cout << "Select Starting Location: " <<endl;
-	Node *start = selectNode(graph);
-	/*Node *start = new Node;
-	start = selectNode(graph);*/
-	cout << "Start: " << start->name <<endl;
-	// promt user for finish node
-	cout << "Select Finish Location: " <<endl;
-	Node *finish = selectNode(graph);
+	// two cycles loop to choose only 2 end points.
+	for(int i = 0; i < 2; i++){ // O(N)
+		select = true;
+		if(i == 1) cout << "Select Finish Location: " <<endl;
+		while(select){	// O(N)
+			GPoint userClick = getMouseClick();
+			foreach (Node *node in graph.getNodeSet()){
+				minX = node->loc.getX() - NODE_RADIUS;
+				maxX = node->loc.getX() + NODE_RADIUS;
 
-	Vector<Arc *> path = findShortestPath(start, finish);																// problem	with start ann finsh bad pointers, HOW RETURN POINTER IN C++
+				minY = node->loc.getY() - NODE_RADIUS;
+				maxY = node->loc.getY() + NODE_RADIUS;
+				// check if the user clickAction in Node NODE_RADIUS range to highlight the Node in the Map.
+				if(minX <= userClick.getX() && userClick.getX() <= maxX && minY <= userClick.getY() && userClick.getY() <= maxY){
+					cout << "	SELECTED POINT: " << node->name << endl;
+					//highlight the node, change internal node data structure color -- NOT USED FOR NOW
+					//update color node on the map
+					drawPathfinderNode(node->loc, HIGHLIGHT_COLOR, node->name);
+					repaintPathfinderDisplay();
+					endPoints[i] = node;
+					select = false;
+					break; // stop searching
+				}
+				
+			}			
+			if(select != false) cout << "	Wrong! Choose correct city location: " <<endl;		
+		}
+	}
+
+	Vector<Arc *> path = findShortestPath(endPoints[0], endPoints[1]);
 	foreach(Arc *arc in path)
 		cout << arc->start->name << " --> " << arc->finish->name <<endl;
+	cout << "Path cost: " << getPathCost(path) <<endl;
 	cout << "OK Dijkstra" <<endl;
 }
 
@@ -270,7 +300,6 @@ double getPathCost(const Vector<Arc *> & path){
 	double cost = 0;
 	foreach(Arc *arc in path){
 		cost += arc->cost;
-		cout << "cost: " << cost <<endl;
 	}
 	return cost;
 }
@@ -280,6 +309,7 @@ double getPathCost(const Vector<Arc *> & path){
  * ----------------------------------------------
  * This function check if user point write city location on the map.
  * Use mouseClick get location,	GPoint getMouseClick();
+ * MY/NOTE: CAN'T FIX IT, RETURN BAD POINTER?!
  */
 Node *selectNode(PathFinderGraph graph){
 	Set<Node *> nodes = graph.getNodeSet();
