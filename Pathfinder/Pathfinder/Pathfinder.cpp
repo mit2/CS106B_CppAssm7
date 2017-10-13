@@ -19,6 +19,7 @@
 #include "PathFinderGraph.h"
 #include "strlib.h"
 #include "foreach.h"
+#include "pqueue.h"
 using namespace std;
 
 /* Function prototypes */
@@ -26,6 +27,9 @@ using namespace std;
 void quitAction();
 bool populateGraphFromDataFile(PathFinderGraph & graph);
 void displayMap(PathFinderGraph & graph);
+Vector<Arc *> findShortestPath(Node *start, Node *finish);	// Dijkstra Algm
+double getPathCost(const Vector<Arc *> & path);
+Node *selectNode(PathFinderGraph graph);
 void runDijkstra(PathFinderGraph & graph);
 void runKruskal(PathFinderGraph & graph);
 string promtUserForFile(ifstream &infile, string promt = "");
@@ -156,6 +160,11 @@ bool populateGraphFromDataFile(PathFinderGraph & graph){
 		else 
 			error("Graph creation Error!");
 	}
+	// populate node outgoing arcs
+	foreach (Node *node in graph.getNodeSet()){
+		node->arcs = graph.getArcSet(node);
+	}
+
 	cout << "Graph is populated Successfully!";
 	// if test isConnected() is passed, then return true
 	return true;	
@@ -191,9 +200,21 @@ void displayMap(PathFinderGraph & graph){
  * ----------------------------------------------
  * This function run Dijkstra Algm.
  */
-void runDijkstra(PathFinderGraph & graph){
-	/*Empty*/
-	cout << "ok Dijkstra" <<endl;
+void runDijkstra(PathFinderGraph & graph){	
+	// promt user for strating node, use mouseClick get location,	GPoint getMouseClick();								// NEW CODING HERE
+	cout << "Select Starting Location: " <<endl;
+	Node *start = selectNode(graph);
+	/*Node *start = new Node;
+	start = selectNode(graph);*/
+	cout << "Start: " << start->name <<endl;
+	// promt user for finish node
+	cout << "Select Finish Location: " <<endl;
+	Node *finish = selectNode(graph);
+
+	Vector<Arc *> path = findShortestPath(start, finish);																// problem	with start ann finsh bad pointers, HOW RETURN POINTER IN C++
+	foreach(Arc *arc in path)
+		cout << arc->start->name << " --> " << arc->finish->name <<endl;
+	cout << "OK Dijkstra" <<endl;
 }
 
 /*
@@ -206,7 +227,90 @@ void runKruskal(PathFinderGraph & graph){
 	cout << "ok Kruskal" <<endl;
 }
 
+/*
+ * Implementation notes: findShortestPath
+ * ----------------------------------------------
+ * This function run Dijkstra Algm: 
+ * Explore all paths from the starting node in order of increasing total path
+ * cost until you encounter a path that takes you to your destination. This path must be
+ * the best one, because you have already explored all paths beginning at the starting
+ * node that have a lower cost.
+ */
+Vector<Arc *> findShortestPath(Node *start, Node *finish){
+	Vector<Arc *> path;
+	PriorityQueue< Vector<Arc *> > queue;
+	Map<string, double> fixed;
+	while(start != finish){
+		if(!fixed.containsKey(start->name)){
+			fixed.put(start->name, getPathCost(path));
+			foreach(Arc *arc in start->arcs){						
+				if(!fixed.containsKey(arc->finish->name)){
+					path.add(arc);
+					queue.enqueue(path, getPathCost(path));
+					path.removeAt(path.size() - 1);
+				}
+			}
+		}
+		if(queue.isEmpty()){
+			path.clear();
+			return path;
+		}
+		path = queue.dequeue();
+		start = path[path.size() - 1]->finish;
+	}
+	return path;
+}
 
+/*
+ * Implementation notes: getPathCost
+ * ----------------------------------------------
+ * This function returns the total of the path, which is just the sum of the costs of the arcs.
+ */
+double getPathCost(const Vector<Arc *> & path){
+	double cost = 0;
+	foreach(Arc *arc in path){
+		cost += arc->cost;
+		cout << "cost: " << cost <<endl;
+	}
+	return cost;
+}
+
+/*
+ * Implementation notes: selectNode
+ * ----------------------------------------------
+ * This function check if user point write city location on the map.
+ * Use mouseClick get location,	GPoint getMouseClick();
+ */
+Node *selectNode(PathFinderGraph graph){
+	Set<Node *> nodes = graph.getNodeSet();
+	// define min, max range for Node X and Y according to NODE_RADIUS
+	double minY = 0;
+	double maxY = 0;
+	double minX = 0;
+	double maxX = 0;
+	while(true){
+		GPoint userClick = getMouseClick();
+		foreach (Node *node in graph.getNodeSet()){
+			minX = node->loc.getX() - NODE_RADIUS;
+			maxX = node->loc.getX() + NODE_RADIUS;
+
+			minY = node->loc.getY() - NODE_RADIUS;
+			maxY = node->loc.getY() + NODE_RADIUS;
+			// check if the user clickAction in Node NODE_RADIUS range to highlight the Node in the Map.
+			if(minX <= userClick.getX() && userClick.getX() <= maxX && minY <= userClick.getY() && userClick.getY() <= maxY){
+				cout << "	SELECTED POINT: " << node->name << endl;
+				//highlight the node, change internal node data structure color -- NOT USED FOR NOW
+				//update color node on the map
+				drawPathfinderNode(node->loc, HIGHLIGHT_COLOR, node->name);
+				repaintPathfinderDisplay();
+				//return graph.getNode(node->name); // stop searching
+				return node;
+			}
+			
+		}
+		cout << "	Wrong! Choose correct city location: " <<endl;		
+	}
+}
 /* Sample callback function */
 
 void quitAction() {
