@@ -207,6 +207,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\graph_Stanford.h"
+				>
+			</File>
+			<File
 				RelativePath=".\graphtypes.h"
 				>
 			</File>

@@ -35,9 +35,71 @@
 #ifndef _path_h
 #define _path_h
 
+#include "stack.h"
+#include "vector.h"
+#include "graphtypes.h"
+using namespace std;
+
 class Path {
 
-// [TODO: complete the class definition]
+public:
+/*
+ * Constructor: Path
+ * Usage: Path();
+ * ----------------------------------
+ * Creates an empty Path object.
+ */
+   Path();
+
+/*
+ * Destructor: ~Path
+ * Usage: Path();
+ * ----------------------------------
+ * Frees internal storage allocated to represent a Path.
+ */
+   ~Path();
+
+/*
+ * Function: getPathCost
+ * Usage: double cost = path.getPathCost();
+ * ----------------------------------
+ * Returns path's total cost as a sum of all edges in constant time.
+ */
+   double getPathCost();	// O(1)
+
+/*
+ * Function: addArc
+ * Usage: path.addArc(arc);
+ * ----------------------------------
+ * Adds new segment/arc at the end of the path and increment total path's cost counter.
+ */
+   void addArc(Arc *arc);		// O(1)
+
+/*
+ * Function: removeArc
+ * Usage: path.removeArc();
+ * ----------------------------------
+ * Removes segment/arc at the end of the path and decrement total path's cost counter.
+ */
+   void removeArc();		// O(1)
+
+/*
+ * Function: toString
+ * Usage: path.toString();
+ * ----------------------------------
+ * Returns a string composed of the nodes on the path separated by arrows formed by the two-character sequence ->.
+ */
+   string toString();		// O(N)
+
+   
+   Arc *getLastEdge();		// O(N)
+   
+
+private:
+	/* Instance variables */
+	Stack<Arc *> path;
+	Vector<Arc *> pathClone;	// path's copy in terms of vector, used only for path.toString() method.
+	double totalCost;			// path's total cost.
 
 };
 

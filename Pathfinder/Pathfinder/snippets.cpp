@@ -67,4 +67,31 @@ bool populateGraphFromDataFile(PathFinderGraph & graph){
 
 if(graph.getNodeSet().size() == countNodes)
 		cout << "Cool";
+------------------------------------------------------------------------------------------------------------
+	
+	
+Vector<Arc *> findShortestPath(Node *start, Node *finish){
+	Vector<Arc *> path;
+	PriorityQueue< Vector<Arc *> > queue;
+	Map<string, double> fixed;
+	while(start != finish){
+		if(!fixed.containsKey(start->name)){
+			fixed.put(start->name, getPathCost(path));															// NEW CODING HERE replace getPathCost with path.getPathCost() -> O(1)
+			foreach(Arc *arc in start->arcs){						
+				if(!fixed.containsKey(arc->finish->name)){
+					path.add(arc);
+					queue.enqueue(path, getPathCost(path));														// NEW CODING HERE replace getPathCost with path.getPathCost() -> O(1)
+					path.removeAt(path.size() - 1);
+				}
+			}
+		}
+		if(queue.isEmpty()){
+			path.clear();
+			return path;
+		}
+		path = queue.dequeue();
+		start = path[path.size() - 1]->finish;
+	}
+	return path;
+}
 */

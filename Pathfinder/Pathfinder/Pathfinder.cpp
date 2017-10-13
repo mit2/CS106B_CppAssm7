@@ -20,6 +20,7 @@
 #include "strlib.h"
 #include "foreach.h"
 #include "pqueue.h"
+#include "path.h"
 using namespace std;
 
 /* Function prototypes */
@@ -27,7 +28,7 @@ using namespace std;
 void quitAction();
 bool populateGraphFromDataFile(PathFinderGraph & graph);
 void displayMap(PathFinderGraph & graph);
-Vector<Arc *> findShortestPath(Node *start, Node *finish);	// Dijkstra Algm
+Path findShortestPath(Node *start, Node *finish);	// Dijkstra Algm
 double getPathCost(const Vector<Arc *> & path);
 Node *selectNode(PathFinderGraph graph);
 void runDijkstra(PathFinderGraph & graph);
@@ -240,10 +241,12 @@ void runDijkstra(PathFinderGraph & graph){
 		}
 	}
 
-	Vector<Arc *> path = findShortestPath(endPoints[0], endPoints[1]);
-	foreach(Arc *arc in path)
-		cout << arc->start->name << " --> " << arc->finish->name <<endl;
-	cout << "Path cost: " << getPathCost(path) <<endl;
+	Path path = findShortestPath(endPoints[0], endPoints[1]);
+	/*foreach(Arc *arc in path)
+		cout << arc->start->name << " --> " << arc->finish->name <<endl;*/
+	//cout << "Path cost: " << getPathCost(path) <<endl;
+	cout << path.toString();
+	cout << path.getPathCost();
 	cout << "OK Dijkstra" <<endl;
 }
 
@@ -266,27 +269,27 @@ void runKruskal(PathFinderGraph & graph){
  * the best one, because you have already explored all paths beginning at the starting
  * node that have a lower cost.
  */
-Vector<Arc *> findShortestPath(Node *start, Node *finish){
-	Vector<Arc *> path;
-	PriorityQueue< Vector<Arc *> > queue;
+Path findShortestPath(Node *start, Node *finish){
+	Path path;
+	PriorityQueue<Path> queue;
 	Map<string, double> fixed;
 	while(start != finish){
 		if(!fixed.containsKey(start->name)){
-			fixed.put(start->name, getPathCost(path));
+			fixed.put(start->name, path.getPathCost());															// NEW CODING HERE replace getPathCost with path.getPathCost() -> O(1)
 			foreach(Arc *arc in start->arcs){						
 				if(!fixed.containsKey(arc->finish->name)){
-					path.add(arc);
-					queue.enqueue(path, getPathCost(path));
-					path.removeAt(path.size() - 1);
+					path.addArc(arc);
+					queue.enqueue(path, path.getPathCost());														// NEW CODING HERE replace getPathCost with path.getPathCost() -> O(1)
+					path.removeArc();
 				}
 			}
 		}
 		if(queue.isEmpty()){
-			path.clear();
+			path.~Path();
 			return path;
 		}
 		path = queue.dequeue();
-		start = path[path.size() - 1]->finish;
+		start = path.getLastEdge()->finish;
 	}
 	return path;
 }

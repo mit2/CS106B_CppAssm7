@@ -17,7 +17,7 @@
 /*
  * Implementation notes: PathFinderGraph SubClass
  * --------------------------------------
- * NOTE1: just srarting to designing a Class, don't have any extra wanted
+ * MY/NOTE1: just srarting to designing a Class, don't have any extra wanted
  * mehtods to add it.
  */
 

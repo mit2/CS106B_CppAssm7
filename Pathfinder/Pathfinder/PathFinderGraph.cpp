@@ -11,7 +11,7 @@ using namespace std;
 
 
 /*
- * Implementation notes: repaintPathfinderDisplay
+ * Implementation notes: PathFinderGraph
  * ----------------------------------------------
  * The only initialization requared at this level is creating am empty data 
  * structures, which is perfomed automaticaly by the underlying classes.

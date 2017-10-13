@@ -1,8 +1,8 @@
 /*
  * File: path.cpp
  * --------------
- * Name: [TODO: enter name here]
- * Section: [TODO: enter section leader here]
+ * Name: [Alex Maestro]
+ * Section: [Also Leader here]
  * This file implements the path.h interface.
  */
 
@@ -15,4 +15,80 @@
 // in structuring the Path class as you did.                       //
 /////////////////////////////////////////////////////////////////////
 
-// [TODO: implement the methods in your Path class]
+#include <iostream>
+#include "path.h"
+#include "foreach.h"
+#include "graphtypes.h"
+using namespace std;
+
+
+/*
+ * Implementation notes: Path
+ * ----------------------------------------------
+ * The only initialization requared at this level is creating am empty data 
+ * structures, which is perfomed automaticaly by the underlying classes.
+ * The destructor must free individual arcs structures.
+ */
+
+Path::Path(){
+	totalCost = 0;
+}
+Path::~Path(){
+	path.clear();
+	pathClone.clear();
+}
+
+/*
+ * Implementation notes: getPathCost
+ * ----------------------------------------------
+ * Just return value of total path's cost in O(1).
+ */
+double Path::getPathCost(){
+	return totalCost;
+}
+
+/*
+ * Implementation notes: addArc
+ * ----------------------------------------------
+ * Adds segment to the end of the path in O(1) --> why is Stack ADT used.
+ * Adds segment to the end of the path in O(1) --> why is Vector ADT used as duplicate.
+ */
+void Path::addArc(Arc *arc){
+	path.push(arc);
+	pathClone.add(arc);
+	totalCost = totalCost + arc->cost;
+}
+
+/*
+ * Implementation notes: removeArc
+ * ----------------------------------------------
+ * Removes segment from the end of the path in O(1) --> why is Stack ADT used.
+ * Removes segment from the end of the path in O(N) --> why is Vector ADT used as duplicate.		// OPTIMISE IT! BELLOW
+ */
+void Path::removeArc(){
+	Arc *arc = path.pop();
+	pathClone.removeAt(pathClone.size() - 1);		// maybe build pathClone when it needed toString() representation to avoid removeAt() in O(N)
+	totalCost = totalCost - arc->cost;
+}
+
+
+Arc *Path::getLastEdge(){
+	return path.peek();
+}
+
+/*
+ * Implementation notes: toString
+ * ----------------------------------------------
+ * Returns a string composed of the nodes on the path separated by arrows formed by the two-character sequence in O(N) --> why is Vector ADT used as duplicate
+ * b/c it is easy iterate thru Vector, as Stack don't have an iterator.
+ */
+string Path::toString(){
+	// consider the case to build intare pathClone from stack only here to avoid O(N) above in removeArc()
+	string strPath = "";
+	foreach(Arc *arc in pathClone){
+		//cout << arc->start->name << " --> " << arc->finish->name << " | ";
+		strPath = strPath + arc->start->name + " --> " + arc->finish->name + " | ";
+	}
+	return strPath;
+}
+
