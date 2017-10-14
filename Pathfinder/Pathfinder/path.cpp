@@ -19,6 +19,7 @@
 #include "path.h"
 #include "foreach.h"
 #include "graphtypes.h"
+#include "gpathfinder.h"
 using namespace std;
 
 
@@ -78,6 +79,19 @@ void Path::removeArc(){
  */
 Arc *Path::getLastEdge(){
 	return path.peek();
+}
+
+/*
+ * Implementation notes: displayPath
+ * ----------------------------------------------
+ * Highlight path's segments and display on the screen in O(N) --> why is Vector ADT used.
+ */
+void Path::displayPath(){
+	for(int i = 0; i < pathClone.size(); i ++){
+		if(i != 0 || i != pathClone.size())drawPathfinderNode(pathClone[i]->finish->loc, HIGHLIGHT_COLOR, pathClone[i]->finish->name);	// 1st and last node not highlight, as higlighted prev by user choice.
+		drawPathfinderArc(pathClone[i]->start->loc, pathClone[i]->finish->loc, HIGHLIGHT_COLOR);
+	}
+	repaintPathfinderDisplay();
 }
 
 /*

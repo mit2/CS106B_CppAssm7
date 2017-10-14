@@ -98,6 +98,14 @@ public:
  * Returns last segment in the path, without removing it.
  */  
    Arc *getLastEdge();		// O(1)
+
+/*
+ * Function: displayPath
+ * Usage: path.displayPath();
+ * ----------------------------------
+ * Highlight path's segments and display on the screen.
+ */ 
+   void displayPath();			// O(N)
    
 
 private:

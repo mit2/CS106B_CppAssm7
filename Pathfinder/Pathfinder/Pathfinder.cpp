@@ -245,6 +245,7 @@ void runDijkstra(PathFinderGraph & graph){
 	/*foreach(Arc *arc in path)
 		cout << arc->start->name << " --> " << arc->finish->name <<endl;*/
 	//cout << "Path cost: " << getPathCost(path) <<endl;
+	path.displayPath();
 	cout << path.toString();
 	cout << path.getPathCost();
 	cout << "OK Dijkstra" <<endl;
