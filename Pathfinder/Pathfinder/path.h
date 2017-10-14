@@ -105,13 +105,13 @@ public:
  * ----------------------------------
  * Highlight path's segments and display on the screen.
  */ 
-   void displayPath();			// O(N)
+   void displayPath(string color);			// O(N)
    
 
 private:
 	/* Instance variables */
 	Stack<Arc *> path;
-	Vector<Arc *> pathClone;	// path's copy in terms of vector, used only for path.toString() method.
+	Vector<Arc *> pathClone;	// path's copy in terms of vector, used only for path.toString(), displayPath() methods.
 	double totalCost;			// path's total cost.
 
 };
