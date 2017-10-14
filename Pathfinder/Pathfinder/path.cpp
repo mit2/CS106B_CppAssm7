@@ -71,7 +71,11 @@ void Path::removeArc(){
 	totalCost = totalCost - arc->cost;
 }
 
-
+/*
+ * Implementation notes: getLastEdge
+ * ----------------------------------------------
+ * Returns last segment in the path, without removing it in O(1) --> why is Stack ADT used.
+ */
 Arc *Path::getLastEdge(){
 	return path.peek();
 }
@@ -85,10 +89,15 @@ Arc *Path::getLastEdge(){
 string Path::toString(){
 	// consider the case to build intare pathClone from stack only here to avoid O(N) above in removeArc()
 	string strPath = "";
-	foreach(Arc *arc in pathClone){
-		//cout << arc->start->name << " --> " << arc->finish->name << " | ";
-		strPath = strPath + arc->start->name + " --> " + arc->finish->name + " | ";
+	bool start = false; // marker for geting value for starting node.
+	foreach(Arc *arc in pathClone){		
+		if(start == false){
+			strPath += arc->start->name; 
+			start = true;
+		}
+		strPath += " --> " + arc->finish->name;
 	}
+	cout << endl;
 	return strPath;
 }
 

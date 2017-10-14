@@ -91,8 +91,13 @@ public:
  */
    string toString();		// O(N)
 
-   
-   Arc *getLastEdge();		// O(N)
+ /*
+ * Function: getLastEdge
+ * Usage: path.getLastEdge();
+ * ----------------------------------
+ * Returns last segment in the path, without removing it.
+ */  
+   Arc *getLastEdge();		// O(1)
    
 
 private:
