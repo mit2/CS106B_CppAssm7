@@ -7,6 +7,7 @@
  */
 
 #include "PathFinderGraph.h"
+#include "gpathfinder.h"
 using namespace std;
 
 
@@ -23,4 +24,15 @@ PathFinderGraph::PathFinderGraph(){
 }
 PathFinderGraph::~PathFinderGraph(){
 	// implement here
+}
+
+
+
+void PathFinderGraph::storeHighlightedPath(Path path){
+	choosenPath = path;
+}
+
+
+void PathFinderGraph::clearHighlightedPath(){
+	choosenPath.displayPath(ARC_COLOR, "1stNodeClearAlso");
 }

@@ -13,6 +13,7 @@
 
 #include "graphtypes.h"
 #include "graph.h"
+#include "path.h"
 
 /*
  * Implementation notes: PathFinderGraph SubClass
@@ -38,11 +39,16 @@ public:
  * Frees internal storage allocated to represent a PathFinderGraph.
  */
    ~PathFinderGraph();
+
+void storeHighlightedPath(Path path);
+
+
+void clearHighlightedPath();
    
 
 private:
 	/* Instance variables */
-	// for the moment i see no private data for PathFinderGraph.
+	Path choosenPath;	// most recent path displayed by using Dijkstra and Kruskal Algm buttons.
 
 	/* private methods */
 	// for the moment i see no private data for PathFinderGraph.

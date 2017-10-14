@@ -202,6 +202,7 @@ void displayMap(PathFinderGraph & graph){
  * This function run Dijkstra Algm. O(N^2)
  */
 void runDijkstra(PathFinderGraph & graph){
+	graph.clearHighlightedPath();
 	Set<Node *> nodes = graph.getNodeSet();
 	// define min, max range for Node X and Y according to NODE_RADIUS
 	double minY = 0;
@@ -241,14 +242,13 @@ void runDijkstra(PathFinderGraph & graph){
 		}
 	}
 
-	Path path = findShortestPath(endPoints[0], endPoints[1]);
-	/*foreach(Arc *arc in path)
-		cout << arc->start->name << " --> " << arc->finish->name <<endl;*/
-	//cout << "Path cost: " << getPathCost(path) <<endl;
-	path.displayPath(HIGHLIGHT_COLOR);
+	Path path = findShortestPath(endPoints[0], endPoints[1]);	
+	path.displayPath(HIGHLIGHT_COLOR, "");
 	cout << path.toString();
 	cout << " " << path.getPathCost() << endl;
 	cout << "OK Dijkstra" <<endl;
+
+	graph.storeHighlightedPath(path);
 }
 
 /*

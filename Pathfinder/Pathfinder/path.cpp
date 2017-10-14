@@ -86,14 +86,16 @@ Arc *Path::getLastEdge(){
  * ----------------------------------------------
  * Highlight path's segments and display on the screen in O(N) --> why is Vector ADT used.
  * Will highlight and display any spanning tree path b/c in the Vector arc stored in sequence, and will redraw if nessesary the same node twice.
- * param color -- handy if we want highlight path and return back to original color  later.
+ * param 'color' -- handy if we want highlight path and return back to original color  later.
  */
-void Path::displayPath(string color){
+void Path::displayPath(string color, string marker){
 	for(int i = 0; i < pathClone.size(); i ++){
+		if(marker == "1stNodeClearAlso" && i == 0) drawPathfinderNode(pathClone[i]->start->loc, color, pathClone[i]->start->name);
 		if(i != 0 || i != pathClone.size())drawPathfinderNode(pathClone[i]->finish->loc, color, pathClone[i]->finish->name);	// 1st and last node not highlight, as higlighted prev by user choice.
 		drawPathfinderArc(pathClone[i]->start->loc, pathClone[i]->finish->loc, color);
 	}
 	repaintPathfinderDisplay();
+	pathClear = pathClone;	
 }
 
 /*
