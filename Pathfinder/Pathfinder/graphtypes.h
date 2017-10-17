@@ -37,8 +37,9 @@ struct SimpleGraph {
 
 struct Node {
    std::string name;
-   std::string color;	// my extention to Node struct
+   std::string color;	// MY/EXTENTION
    Set<Arc *> arcs;		// give us also set of adjucent Nodes.
+   Set<Node *> conSet;	// MY/EXTENTION -- connected Set of nodes for this node.
    GPoint loc;
 };
 

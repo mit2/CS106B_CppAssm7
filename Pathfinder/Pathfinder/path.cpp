@@ -88,14 +88,19 @@ Arc *Path::getLastEdge(){
  * Will highlight and display any spanning tree path b/c in the Vector arc stored in sequence, and will redraw if nessesary the same node twice.
  * param 'color' -- handy if we want highlight path and return back to original color  later.
  */
-void Path::displayPath(string color, string marker){
+void Path::displayPath(string color, string marker, string marker2){
 	for(int i = 0; i < pathClone.size(); i ++){
 		if(marker == "1stNodeClearAlso" && i == 0) drawPathfinderNode(pathClone[i]->start->loc, color, pathClone[i]->start->name);
-		if(i != 0 || i != pathClone.size())drawPathfinderNode(pathClone[i]->finish->loc, color, pathClone[i]->finish->name);	// 1st and last node not highlight, as higlighted prev by user choice.
+		if(marker2 == "kruskal")drawPathfinderNode(pathClone[i]->start->loc, color, pathClone[i]->start->name);
+		if(i != 0 || i != pathClone.size() - 1)drawPathfinderNode(pathClone[i]->finish->loc, color, pathClone[i]->finish->name);	// 1st and last node not highlight, as higlighted prev by user choice.
 		drawPathfinderArc(pathClone[i]->start->loc, pathClone[i]->finish->loc, color);
 	}
 	repaintPathfinderDisplay();
 	pathClear = pathClone;	
+}
+
+int Path::getSize(){
+	return pathClone.size();
 }
 
 /*

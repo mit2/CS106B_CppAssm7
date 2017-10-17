@@ -21,6 +21,8 @@
 #include "foreach.h"
 #include "pqueue.h"
 #include "path.h"
+#include "set.h"
+
 using namespace std;
 
 /* Function prototypes */
@@ -52,9 +54,7 @@ int main() {
    addButton("Kruskal", runKruskal, graph);
    addButton("Quit", quitAction);
 
-
-   pathfinderEventLoop();
-   
+   pathfinderEventLoop();   
    return 0;
 }
 
@@ -96,6 +96,7 @@ bool populateGraphFromDataFile(PathFinderGraph & graph){
 	while(getline(infile, line)){
 		if(mapNotSet){			
 				drawPathfinderMap(line);															// FINISH HERE	OK	
+				graph.storeMapImg(line);
 				mapNotSet = false;
 			}
 		scanner.setInput(line);
@@ -166,6 +167,11 @@ bool populateGraphFromDataFile(PathFinderGraph & graph){
 		node->arcs = graph.getArcSet(node);
 	}
 
+	// populate node connected Set
+	foreach (Node *node in graph.getNodeSet()){
+		node->conSet.add(node);
+	}
+
 	cout << "Graph is populated Successfully!";
 	// if test isConnected() is passed, then return true
 	return true;	
@@ -181,10 +187,11 @@ bool populateGraphFromDataFile(PathFinderGraph & graph){
  * MY/NOTE2: Or implement drawPath() in Path Class to highlight the finded path.
  */
 void displayMap(PathFinderGraph & graph){
-	// if(graph exist) delete previouse instance, ~PathFinderGraph();
+	// if(graph exist) delete previouse instance for load new map
+	if(!graph.isEmpty() && graph.getRedraw() == false)graph.clearAll(graph);
 
 	// populate graph
-	populateGraphFromDataFile(graph);
+	if(graph.getRedraw() == false)populateGraphFromDataFile(graph);
 	// display map
 	foreach (Node *node in graph.getNodeSet())
 		drawPathfinderNode(node->loc, node->color, node->name);
@@ -202,7 +209,9 @@ void displayMap(PathFinderGraph & graph){
  * This function run Dijkstra Algm. O(N^2)
  */
 void runDijkstra(PathFinderGraph & graph){
-	graph.clearHighlightedPath();
+	if(graph.getLastExecutedAlgm() == "Kruskal")displayMap(graph);
+	if(graph.getchoosenPathSize() > 0)graph.clearHighlightedPath();	// redraw path to it's original color if path.size > 0, else do nothing
+	
 	Set<Node *> nodes = graph.getNodeSet();
 	// define min, max range for Node X and Y according to NODE_RADIUS
 	double minY = 0;
@@ -243,12 +252,14 @@ void runDijkstra(PathFinderGraph & graph){
 	}
 
 	Path path = findShortestPath(endPoints[0], endPoints[1]);	
-	path.displayPath(HIGHLIGHT_COLOR, "");
+	path.displayPath(HIGHLIGHT_COLOR, "", "");
 	cout << path.toString();
 	cout << " " << path.getPathCost() << endl;
 	cout << "OK Dijkstra" <<endl;
 
 	graph.storeHighlightedPath(path);
+	graph.setLastExecutedAlgm("Dijkstra");
+	graph.setRedraw(false);
 }
 
 /*
@@ -257,8 +268,56 @@ void runDijkstra(PathFinderGraph & graph){
  * This function run Kruskal Algm.
  */
 void runKruskal(PathFinderGraph & graph){
-	/*Empty*/
-	cout << "ok Kruskal" <<endl;
+	if(graph.getchoosenPathSize() > 0)graph.clearHighlightedPath();
+	PriorityQueue<Arc *> pqueue;	//store arc in order using arc cost as priority.
+	Set<Node *> new_connectedSet;		//store arc nodes, whith is belong to MST(min span tree).
+	Arc *arc;
+	Path mstree;						//MST(min span tree).
+
+	Set<Arc *> nodes = graph.getArcSet();
+	foreach (Arc *arc in graph.getArcSet())
+		pqueue.enqueue(arc, arc->cost);
+	
+	cout << "Kruskal Algm Start: " <<endl;
+	while(!pqueue.isEmpty()){
+		arc = pqueue.dequeue();
+		if(!arc->start->conSet.contains(arc->finish) && !arc->finish->conSet.contains(arc->start)){
+			cout << "	" << arc->start->name << "-->" << arc->finish->name << " OK JOINED"<<endl;
+			mstree.addArc(arc);
+			new_connectedSet = arc->start->conSet + arc->finish->conSet;			
+			//foreach node in newconSet update Set to point to newconSet
+			foreach (Node *node in new_connectedSet)
+				node->conSet = new_connectedSet;
+		}else{
+			cout << "	" << arc->start->name << "-->" << arc->finish->name <<endl;
+		}
+
+	}
+	
+	// clear Display
+	void initPathfinderGraphics();
+	drawPathfinderMap(graph.getMapImg());
+	// draw mstree only
+	mstree.displayPath(HIGHLIGHT_COLOR, "", "kruskal");
+	repaintPathfinderDisplay();
+
+	cout << " MSTree cost: " << mstree.getPathCost() << endl;
+	// MSTree nodeSet is also subset of graph.getNodeSet, where it's sizes should be equal.
+	// Check mstree
+	if(mstree.getSize() == (graph.getNodeSet().size() - 1))
+		cout << "OK Kruskal."<<endl;
+	else 
+		cout << "BAD Kruskal!" <<endl;
+
+	graph.storeHighlightedPath(mstree);
+	graph.setLastExecutedAlgm("Kruskal");
+	graph.setRedraw(true);
+	
+	// restore node connected Set in case you willl press Kruskal's button again.
+	foreach (Node *node in graph.getNodeSet()){
+		node->conSet.clear();
+		node->conSet.add(node);	// make again 1 elem Set.
+	}
 }
 
 /*

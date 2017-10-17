@@ -105,7 +105,10 @@ public:
  * ----------------------------------
  * Highlight path's segments and display on the screen.
  */ 
-   void displayPath(string color, string marker);			// O(N)
+   void displayPath(string color, string marker, string marker2);			// O(N)
+
+
+   int getSize();
    
 
 private:
