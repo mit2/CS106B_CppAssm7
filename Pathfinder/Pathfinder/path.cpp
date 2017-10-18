@@ -96,9 +96,13 @@ void Path::displayPath(string color, string marker, string marker2){
 		drawPathfinderArc(pathClone[i]->start->loc, pathClone[i]->finish->loc, color);
 	}
 	repaintPathfinderDisplay();
-	pathClear = pathClone;	
 }
 
+/*
+ * Implementation notes: getSize
+ * ----------------------------------------------
+ * Gets vector size in O(1) --> why is Vector ADT used.
+ */
 int Path::getSize(){
 	return pathClone.size();
 }

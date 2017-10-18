@@ -107,7 +107,12 @@ public:
  */ 
    void displayPath(string color, string marker, string marker2);			// O(N)
 
-
+/*
+ * Function: getSize
+ * Usage: path.getSize();
+ * ----------------------------------
+ * Returns path size as total ammount of segments in it.
+ */
    int getSize();
    
 
@@ -115,7 +120,6 @@ private:
 	/* Instance variables */
 	Stack<Arc *> path;
 	Vector<Arc *> pathClone;	// path's copy in terms of vector, used only for path.toString(), displayPath() methods.
-	Vector<Arc *> pathClear;	// most recent copy of higlighted path to be used to take off highlihgt when Dijkstra button  will be clicked bu user newly.
 	double totalCost;			// path's total cost.
 
 };

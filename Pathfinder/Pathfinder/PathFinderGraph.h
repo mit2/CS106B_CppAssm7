@@ -40,33 +40,19 @@ public:
  */
    ~PathFinderGraph();
 
-void storeHighlightedPath(Path path);
-
-
-void clearHighlightedPath();
-
 
 void storeMapImg(string img);
-
 string getMapImg();
 
-void setLastExecutedAlgm(string algmName);
-string getLastExecutedAlgm();
+void setLastExecutAlgm(string lastAlgm);
+string getLastExecutAlgm();
 
-void clearAll(PathFinderGraph & graph);
-
-void setRedraw(bool flag);
-bool getRedraw();
-
-int getchoosenPathSize();
 
 
 private:
 	/* Instance variables */
-	Path choosenPath;	// most recent path displayed by using Dijkstra and Kruskal Algm buttons.
 	string image;		// map image for graph to archived.
 	string algm;		// last executed algm.
-	bool redraw;
 
 	/* private methods */
 	// for the moment i see no private data for PathFinderGraph.

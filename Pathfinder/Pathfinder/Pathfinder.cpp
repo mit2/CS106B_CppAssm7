@@ -1,13 +1,15 @@
 /*
  * File: Pathfinder.cpp
  * --------------------
- * Name: [TODO: enter name here] Alex Lavrenso
- * Section: [TODO: enter section leader here] No leader
+ * Name: [Alex Maestro]
+ * Section: [Also Leader here]
  * This file is the starter project for the Pathfinder application
- * on Assignment #6.
+ * on Assignment #7.
  */
  
-// [TODO: complete this implementation]
+// MY/FEEDBACK to Assm7
+/*The best way is design App and separate all by activity independed  modules --- mean to have some App Outline in front of you
+(some Software Designing Studio, as UML), to avoid messup when starting adding some extra functionality or  try to coordinate correct activty across diff part of App.*/
 
 #include <iostream>
 #include <fstream>
@@ -36,6 +38,7 @@ Node *selectNode(PathFinderGraph graph);
 void runDijkstra(PathFinderGraph & graph);
 void runKruskal(PathFinderGraph & graph);
 string promtUserForFile(ifstream &infile, string promt = "");
+void displayGraph(PathFinderGraph & graph);
 
 /* Main program */
 /* Program outline */
@@ -49,12 +52,13 @@ string promtUserForFile(ifstream &infile, string promt = "");
 int main() {
    PathFinderGraph graph;
    initPathfinderGraphics();   
-   addButton("Map", displayMap, graph);															// NEW CODING HERE	ok
+   addButton("Map", displayMap, graph);								
    addButton("Dijkstra", runDijkstra, graph);
    addButton("Kruskal", runKruskal, graph);
    addButton("Quit", quitAction);
 
-   pathfinderEventLoop();   
+   pathfinderEventLoop();
+   graph.~PathFinderGraph();	// clear heap memory from graph DS's.
    return 0;
 }
 
@@ -187,17 +191,15 @@ bool populateGraphFromDataFile(PathFinderGraph & graph){
  * MY/NOTE2: Or implement drawPath() in Path Class to highlight the finded path.
  */
 void displayMap(PathFinderGraph & graph){
-	// if(graph exist) delete previouse instance for load new map
-	if(!graph.isEmpty() && graph.getRedraw() == false)graph.clearAll(graph);
+	/* IT WAS AN ORIGINAL AN IDEA:
+	To save the time to not redraw graph each time, when button is pushed, but just redraw prodused by algm path to it's base color,
+	but it gets messy, when start switching a map or pushing buttons. So i got back to simpler implementation but it will run O(n^2) complexity*/
 
-	// populate graph
-	if(graph.getRedraw() == false)populateGraphFromDataFile(graph);
-	// display map
-	foreach (Node *node in graph.getNodeSet())
-		drawPathfinderNode(node->loc, node->color, node->name);
+	// if(graph exist) delete previouse instance for loading new map
+	if(!graph.isEmpty())graph.clear();
 
-	foreach (Arc *arc in graph.getArcSet())
-		drawPathfinderArc(arc->start->loc, arc->finish->loc, arc->color);
+	populateGraphFromDataFile(graph);
+	displayGraph(graph);
 	
 	repaintPathfinderDisplay();
 	cout << "Map is created Successfully!" <<endl;	
@@ -209,9 +211,9 @@ void displayMap(PathFinderGraph & graph){
  * This function run Dijkstra Algm. O(N^2)
  */
 void runDijkstra(PathFinderGraph & graph){
-	if(graph.getLastExecutedAlgm() == "Kruskal")displayMap(graph);
-	if(graph.getchoosenPathSize() > 0)graph.clearHighlightedPath();	// redraw path to it's original color if path.size > 0, else do nothing
-	
+	cout << "Start Dijkstra Algm: " <<endl;
+	// only redraw graph after some exec of algm, avoid reapitng displayGraph after pushing Map button.
+	if(graph.getLastExecutAlgm() == "Dijkstra" || graph.getLastExecutAlgm() == "Kruskal")displayGraph(graph);
 	Set<Node *> nodes = graph.getNodeSet();
 	// define min, max range for Node X and Y according to NODE_RADIUS
 	double minY = 0;
@@ -220,7 +222,7 @@ void runDijkstra(PathFinderGraph & graph){
 	double maxX = 0;
 	Node *endPoints[2]; // start and finish end points holder.
 	bool select;
-	// promt user for strating node, use mouseClick get location,	GPoint getMouseClick();								// NEW CODING HERE
+	// promt user for strating node, use mouseClick get location,	GPoint getMouseClick();	
 	cout << "Select Starting Location: " <<endl;
 	// two cycles loop to choose only 2 end points.
 	for(int i = 0; i < 2; i++){ // O(N)
@@ -257,9 +259,7 @@ void runDijkstra(PathFinderGraph & graph){
 	cout << " " << path.getPathCost() << endl;
 	cout << "OK Dijkstra" <<endl;
 
-	graph.storeHighlightedPath(path);
-	graph.setLastExecutedAlgm("Dijkstra");
-	graph.setRedraw(false);
+	graph.setLastExecutAlgm("Dijkstra");
 }
 
 /*
@@ -268,7 +268,6 @@ void runDijkstra(PathFinderGraph & graph){
  * This function run Kruskal Algm.
  */
 void runKruskal(PathFinderGraph & graph){
-	if(graph.getchoosenPathSize() > 0)graph.clearHighlightedPath();
 	PriorityQueue<Arc *> pqueue;	//store arc in order using arc cost as priority.
 	Set<Node *> new_connectedSet;		//store arc nodes, whith is belong to MST(min span tree).
 	Arc *arc;
@@ -309,9 +308,7 @@ void runKruskal(PathFinderGraph & graph){
 	else 
 		cout << "BAD Kruskal!" <<endl;
 
-	graph.storeHighlightedPath(mstree);
-	graph.setLastExecutedAlgm("Kruskal");
-	graph.setRedraw(true);
+	graph.setLastExecutAlgm("Kruskal");
 	
 	// restore node connected Set in case you willl press Kruskal's button again.
 	foreach (Node *node in graph.getNodeSet()){
@@ -408,4 +405,12 @@ Node *selectNode(PathFinderGraph graph){
 
 void quitAction() {
    exit(0);
+}
+
+void displayGraph(PathFinderGraph & graph){
+	foreach (Node *node in graph.getNodeSet())
+		drawPathfinderNode(node->loc, node->color, node->name);
+
+	foreach (Arc *arc in graph.getArcSet())
+		drawPathfinderArc(arc->start->loc, arc->finish->loc, arc->color);
 }
